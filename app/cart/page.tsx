@@ -2,18 +2,52 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, Package, Leaf } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, Package, Leaf, LogIn } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 
 const SHIPPING_THRESHOLD = 499;
 const SHIPPING_COST = 49;
 
 export default function CartPage() {
   const { items, removeItem, updateQty, total, count } = useCart();
+  const { user, loading, openAuthModal } = useAuth();
 
   const shipping = total >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const grandTotal = total + shipping;
+
+  /* ── Auth gate ── */
+  if (!loading && !user) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-screen bg-[#f9fafb] pt-[72px] flex items-center justify-center px-4">
+          <div className="text-center max-w-sm">
+            <div className="w-20 h-20 rounded-full bg-[#f36b21]/10 flex items-center justify-center mx-auto mb-5">
+              <ShoppingCart className="w-9 h-9 text-[#f36b21]" />
+            </div>
+            <h2 className="font-heading text-2xl font-bold text-[#1f2933] mb-2">Sign in to view cart</h2>
+            <p className="text-slate-500 text-sm mb-7">
+              Create an account or sign in to add items to your cart and place orders.
+            </p>
+            <button
+              onClick={openAuthModal}
+              className="inline-flex items-center gap-2 bg-[#1f2933] hover:bg-[#323f4b] text-white font-semibold text-sm px-7 py-3 rounded-full transition-colors"
+            >
+              <LogIn className="w-4 h-4" />
+              Sign In / Create Account
+            </button>
+            <div className="mt-6">
+              <Link href="/" className="text-sm text-slate-400 hover:text-[#f36b21] transition-colors">
+                ← Continue Browsing
+              </Link>
+            </div>
+          </div>
+        </main>
+      </>
+    );
+  }
 
   if (count === 0) {
     return (

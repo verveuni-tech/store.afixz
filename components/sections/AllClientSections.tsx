@@ -94,7 +94,7 @@ const PlantsSection = dynamic(
             displayLabel="Plants"
             title="Indoor & Outdoor Plants"
             ctaLabel="View All Plants"
-            ctaHref="/shop?category=plants"
+            ctaHref="/shop/plants"
             layout="grid"
             background="white"
             placeholderProducts={PLACEHOLDER_PLANTS}
@@ -118,7 +118,7 @@ const CompostSection = dynamic(
             displayLabel="Organic Compost"
             title="Vermicompost & Organic Khad"
             ctaLabel="View All Compost"
-            ctaHref="/shop?category=compost"
+            ctaHref="/shop/compost"
             layout="list"
             background="gray"
             placeholderProducts={PLACEHOLDER_COMPOST}
@@ -142,7 +142,7 @@ const PotsSection = dynamic(
             displayLabel="Pots & Planters"
             title="Ceramic Pots & Premium Planters"
             ctaLabel="View All Pots"
-            ctaHref="/shop?category=pots"
+            ctaHref="/shop/pots"
             layout="grid"
             background="white"
             placeholderProducts={PLACEHOLDER_POTS}

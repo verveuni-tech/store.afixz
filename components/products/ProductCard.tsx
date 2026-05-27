@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart, Star, Package, Check, MapPin } from "lucide-react";
+import { ShoppingCart, Star, Package, Check, MapPin, LogIn } from "lucide-react";
 import type { Product } from "@/types/product";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { useLocation } from "@/context/LocationContext";
 import { resolveProductForLocation, isAvailableInLocation } from "@/lib/locationContent";
 import { LOCATIONS } from "@/types/location";
@@ -20,11 +21,16 @@ function useProductState(product: Product) {
 
 function useAddToCart(product: Product) {
   const { addItem } = useCart();
+  const { user, openAuthModal } = useAuth();
   const [added, setAdded] = useState(false);
 
   function add(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+    if (!user) {
+      openAuthModal();
+      return;
+    }
     addItem({
       productId: product.id,
       name: product.name,
@@ -38,13 +44,13 @@ function useAddToCart(product: Product) {
     setTimeout(() => setAdded(false), 1800);
   }
 
-  return { add, added };
+  return { add, added, authed: !!user };
 }
 
 /* ─── Grid card ─── */
 export function ProductCardGrid({ product }: { product: Product }) {
   const { resolved, available, currentCity } = useProductState(product);
-  const { add, added } = useAddToCart(resolved);
+  const { add, added, authed } = useAddToCart(resolved);
 
   const discount =
     resolved.compareAtPrice && resolved.compareAtPrice > resolved.price
@@ -163,12 +169,16 @@ export function ProductCardGrid({ product }: { product: Product }) {
                 ? "bg-emerald-500"
                 : !available
                 ? "bg-slate-300 cursor-not-allowed"
+                : !authed
+                ? "bg-[#f36b21] hover:bg-[#e05e18]"
                 : "bg-[#1f2933] hover:bg-[#323f4b] disabled:opacity-40 disabled:cursor-not-allowed"
             }`}
             style={{ fontFamily: "var(--font-condensed)" }}
           >
             {added ? (
               <><Check className="w-3.5 h-3.5" /> Added</>
+            ) : !authed ? (
+              <><LogIn className="w-3.5 h-3.5" /> Sign In</>
             ) : (
               <><ShoppingCart className="w-3.5 h-3.5" /> Add</>
             )}
@@ -182,7 +192,7 @@ export function ProductCardGrid({ product }: { product: Product }) {
 /* ─── List card ─── */
 export function ProductCardList({ product }: { product: Product }) {
   const { resolved, available, currentCity } = useProductState(product);
-  const { add, added } = useAddToCart(resolved);
+  const { add, added, authed } = useAddToCart(resolved);
 
   return (
     <div
@@ -269,12 +279,16 @@ export function ProductCardList({ product }: { product: Product }) {
                 ? "bg-emerald-500"
                 : !available
                 ? "bg-slate-300 cursor-not-allowed"
+                : !authed
+                ? "bg-[#f36b21] hover:bg-[#e05e18]"
                 : "bg-[#1f2933] hover:bg-[#323f4b] disabled:opacity-40 disabled:cursor-not-allowed"
             }`}
             style={{ fontFamily: "var(--font-condensed)" }}
           >
             {added ? (
               <><Check className="w-3.5 h-3.5" /> Added</>
+            ) : !authed ? (
+              <><LogIn className="w-3.5 h-3.5" /> Sign In</>
             ) : (
               <>Add <span className="text-[10px]">→</span></>
             )}

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   Package, MapPin, ChevronDown, ChevronUp, Check,
   Leaf, ShoppingBag, LogIn, AlertCircle,
@@ -36,7 +35,6 @@ const EMPTY_FORM: AddressForm = {
 };
 
 export default function CheckoutPage() {
-  const router = useRouter();
   const { items, total, count, clearCart } = useCart();
   const { user, profile } = useAuth();
   const { location } = useLocation();

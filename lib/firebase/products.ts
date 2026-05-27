@@ -1,6 +1,5 @@
 "use client";
 
-import { initializeApp, getApps } from "firebase/app";
 import {
   getFirestore,
   collection,
@@ -11,20 +10,11 @@ import {
   getDocs,
   type Timestamp,
 } from "firebase/firestore";
+import { getFirebaseApp } from "@/lib/firebase/app";
 import type { Product, ProductCategory } from "@/types/product";
 
 function getDb() {
-  const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  };
-  const app =
-    getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-  return getFirestore(app);
+  return getFirestore(getFirebaseApp());
 }
 
 function normalizeProduct(id: string, raw: Record<string, unknown>): Product {

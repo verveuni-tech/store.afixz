@@ -11,6 +11,7 @@ import {
 import type { User } from "firebase/auth";
 import type { UserProfile } from "@/types/user";
 import { getUserProfile, ensureUserProfile } from "@/lib/firebase/user";
+import { AuthModal } from "@/components/auth/AuthModal";
 
 interface AuthContextType {
   user: User | null;
@@ -18,6 +19,8 @@ interface AuthContextType {
   loading: boolean;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  /** Opens the global sign-in modal. Use anywhere instead of managing local modal state. */
+  openAuthModal: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -26,6 +29,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   logout: async () => {},
   refreshProfile: async () => {},
+  openAuthModal: () => {},
 });
 
 export function useAuth() {
@@ -36,6 +40,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const openAuthModal = useCallback(() => setShowAuthModal(true), []);
 
   const loadProfile = useCallback(async (u: User) => {
     try {
@@ -59,7 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   useEffect(() => {
-    // Dynamically import to avoid SSR issues
     let unsubscribe: (() => void) | null = null;
 
     (async () => {
@@ -69,7 +75,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const auth = getAuth(getFirebaseApp());
 
-      // Handle email magic link callback
       if (isSignInWithEmailLink(auth, window.location.href)) {
         let email = localStorage.getItem("afixz_store_email_for_signin");
         if (!email) {
@@ -79,10 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           try {
             await signInWithEmailLink(auth, email, window.location.href);
             localStorage.removeItem("afixz_store_email_for_signin");
-            // Clean URL
             window.history.replaceState({}, "", window.location.pathname);
           } catch {
-            // Sign-in failed, continue as unauthenticated
+            // sign-in failed
           }
         }
       }
@@ -91,6 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(u);
         if (u) {
           await loadProfile(u);
+          setShowAuthModal(false); // auto-close on successful sign-in
         } else {
           setProfile(null);
         }
@@ -98,9 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     })();
 
-    return () => {
-      unsubscribe?.();
-    };
+    return () => { unsubscribe?.(); };
   }, [loadProfile]);
 
   const logout = useCallback(async () => {
@@ -112,8 +115,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, logout, refreshProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, logout, refreshProfile, openAuthModal }}>
       {children}
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
     </AuthContext.Provider>
   );
 }
