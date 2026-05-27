@@ -135,15 +135,15 @@ export default function CheckoutPage() {
       const saved = getDeliveryAddress();
       const address = saved
         ? {
-            name: saved.name,
-            phone: saved.phone,
-            houseNo: saved.houseNo,
-            area: saved.area,
-            landmark: saved.landmark,
-            city: saved.city,
-            pincode: saved.pincode,
-            fullAddress: saved.fullAddress,
-          }
+          name: saved.fullName,
+          phone: saved.phone,
+          houseNo: saved.line1,
+          area: saved.fullAddress ?? "",
+          landmark: saved.landmark ?? "",
+          city: saved.city,
+          pincode: saved.pincode,
+          fullAddress: saved.fullAddress ?? "",
+        }
         : buildAddressFromForm();
 
       const id = await createProductOrder({
@@ -292,25 +292,23 @@ export default function CheckoutPage() {
                       <button
                         key={addr.id}
                         onClick={() => { setSelectedSaved(addr.id); setShowNewForm(false); }}
-                        className={`w-full text-left flex items-start gap-3 p-4 rounded-2xl border transition-all ${
-                          selectedSaved === addr.id && !showNewForm
+                        className={`w-full text-left flex items-start gap-3 p-4 rounded-2xl border transition-all ${selectedSaved === addr.id && !showNewForm
                             ? "border-[#f36b21] bg-[#f36b21]/5"
                             : "border-slate-100 bg-white hover:border-slate-200"
-                        }`}
+                          }`}
                       >
                         <div
-                          className={`w-4 h-4 rounded-full border-2 mt-0.5 flex-shrink-0 flex items-center justify-center ${
-                            selectedSaved === addr.id && !showNewForm
+                          className={`w-4 h-4 rounded-full border-2 mt-0.5 flex-shrink-0 flex items-center justify-center ${selectedSaved === addr.id && !showNewForm
                               ? "border-[#f36b21] bg-[#f36b21]"
                               : "border-slate-300"
-                          }`}
+                            }`}
                         >
                           {selectedSaved === addr.id && !showNewForm && (
                             <Check className="w-2.5 h-2.5 text-white" />
                           )}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-[#1f2933] capitalize">{addr.label} — {addr.name}</p>
+                          <p className="text-sm font-semibold text-[#1f2933] capitalize">{addr.label} — {addr.fullName}</p>
                           <p className="text-xs text-slate-500 mt-0.5">{addr.fullAddress}</p>
                           <p className="text-xs text-slate-400">{addr.phone}</p>
                         </div>
@@ -319,11 +317,10 @@ export default function CheckoutPage() {
 
                     <button
                       onClick={() => { setShowNewForm(!showNewForm); setSelectedSaved(null); }}
-                      className={`w-full text-left flex items-center gap-2 p-4 rounded-2xl border transition-all text-sm font-medium ${
-                        showNewForm
+                      className={`w-full text-left flex items-center gap-2 p-4 rounded-2xl border transition-all text-sm font-medium ${showNewForm
                           ? "border-[#f36b21] bg-[#f36b21]/5 text-[#f36b21]"
                           : "border-dashed border-slate-200 text-slate-500 hover:border-slate-300"
-                      }`}
+                        }`}
                     >
                       + Deliver to a different address
                     </button>
