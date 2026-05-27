@@ -14,7 +14,7 @@ export interface UserProfile {
 }
 
 export type SavedAddress = {
-  id?: string;
+  id: string;
 
   fullName: string;
   phone: string;
