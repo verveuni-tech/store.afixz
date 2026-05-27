@@ -106,7 +106,8 @@ export default function AddressesTab({
 
         phone: form.phone.trim(),
 
-        line1: `${form.houseNo}, ${form.area}`.trim(),
+        line1: form.houseNo.trim(),
+        line2: form.area.trim() || undefined,
 
         city: form.city.trim(),
 

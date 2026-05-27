@@ -138,8 +138,7 @@ export default function CheckoutPage() {
           name: saved.fullName,
           phone: saved.phone,
           houseNo: saved.line1,
-          area: saved.fullAddress ?? "",
-          landmark: saved.landmark ?? "",
+          area: saved.line2 ?? "",
           city: saved.city,
           pincode: saved.pincode,
           fullAddress: saved.fullAddress ?? "",
@@ -308,7 +307,7 @@ export default function CheckoutPage() {
                           )}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-[#1f2933] capitalize">{addr.label} — {addr.fullName}</p>
+                         <p className="text-sm font-semibold text-[#1f2933] capitalize"> {addr.label ? `${addr.label} — ` : ""} {addr.fullName} </p>
                           <p className="text-xs text-slate-500 mt-0.5">{addr.fullAddress}</p>
                           <p className="text-xs text-slate-400">{addr.phone}</p>
                         </div>

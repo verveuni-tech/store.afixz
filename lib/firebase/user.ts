@@ -97,14 +97,15 @@ export async function getAddresses(uid: string): Promise<SavedAddress[]> {
     const raw = d.data() as Record<string, unknown>;
     return {
       id: d.id,
-      label: String(raw.label || "Home"),
-      name: String(raw.name || ""),
+      label: String(raw.label || "home"),
+      fullName: String(raw.fullName || raw.name || ""),
       phone: String(raw.phone || ""),
-      houseNo: String(raw.houseNo || ""),
-      area: String(raw.area || ""),
-      landmark: raw.landmark ? String(raw.landmark) : undefined,
+      line1: String(raw.line1 || raw.houseNo || ""),
+      line2: raw.line2 ? String(raw.line2) : undefined,
       city: String(raw.city || ""),
+      state: raw.state ? String(raw.state) : undefined,
       pincode: String(raw.pincode || ""),
+      landmark: raw.landmark ? String(raw.landmark) : undefined,
       fullAddress: String(raw.fullAddress || ""),
       isDefault: Boolean(raw.isDefault),
     };
@@ -115,10 +116,7 @@ export async function addAddress(
   uid: string,
   address: Omit<SavedAddress, "id">
 ): Promise<string> {
-  const ref = await addDoc(collection(db(), "users", uid, "addresses"), {
-    ...address,
-    createdAt: serverTimestamp(),
-  });
+  const ref = await addDoc(collection(db(), "users", uid, "addresses"), address);
   return ref.id;
 }
 
